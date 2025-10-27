@@ -1,0 +1,48 @@
+{
+  "Log in": "เข้าสู่ระบบ",
+  "Log Out": "ออกจากระบบ",
+  "Register": "สมัครใช้งาน",
+  "Email": "อีเมล",
+  "Email Address": "ที่อยู่อีเมล",
+  "Password": "รหัสผ่าน",
+  "Confirm Password": "ยืนยันรหัสผ่าน",
+  "Remember me": "จดจำการเข้าสู่ระบบ",
+  "Forgot your password?": "ลืมรหัสผ่าน?",
+  "Already registered?": "มีบัญชีอยู่แล้ว?",
+  "Name": "ชื่อ",
+
+  "Verify Email Address": "ยืนยันอีเมล",
+  "Resend Verification Email": "ส่งอีเมลยืนยันอีกครั้ง",
+
+  "Dashboard": "แดชบอร์ด",
+  "Profile": "โปรไฟล์",
+
+  "Profile Information": "ข้อมูลโปรไฟล์",
+  "Update your account's profile information and email address.": "อัปเดตข้อมูลโปรไฟล์และอีเมลของบัญชีของคุณ",
+  "Save": "บันทึก",
+  "Saved.": "บันทึกแล้ว",
+
+  "Update Password": "อัปเดตรหัสผ่าน",
+  "Ensure your account is using a long, random password to stay secure.": "เพื่อความปลอดภัย โปรดใช้รหัสผ่านที่ยาวและคาดเดายาก",
+  "Current Password": "รหัสผ่านปัจจุบัน",
+  "New Password": "รหัสผ่านใหม่",
+  "Confirm New Password": "ยืนยันรหัสผ่านใหม่",
+
+  "Delete Account": "ลบบัญชีผู้ใช้",
+  "Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.": "เมื่อบัญชีของคุณถูกลบ ข้อมูลทั้งหมดจะถูกลบอย่างถาวร ก่อนลบบัญชี โปรดดาวน์โหลดข้อมูลที่คุณต้องการเก็บไว้",
+  "DELETE ACCOUNT": "ลบบัญชีผู้ใช้",
+  "Are you sure you want to delete your account?": "คุณแน่ใจหรือไม่ว่าต้องการลบบัญชีผู้ใช้ของคุณ?",
+  "Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.": "เมื่อบัญชีของคุณถูกลบ ข้อมูลทั้งหมดจะถูกลบอย่างถาวร โปรดกรอกรหัสผ่านเพื่อยืนยันการลบถาวร",
+  "Cancel": "ยกเลิก",
+
+  "Edit Profile": "แก้ไขโปรไฟล์",
+  "You are logged in!": "คุณได้เข้าสู่ระบบแล้ว!",
+  "Whoops! Something went wrong.": "อุ๊ย! เกิดข้อผิดพลาดบางอย่าง",
+
+  "Your account is not approved yet": "บัญชีของคุณยังไม่ได้รับการอนุมัติ",
+  "Please wait for an administrator to approve your account before using the system": "กรุณารอให้ผู้ดูแลระบบอนุมัติบัญชีของคุณก่อนเข้าใช้งานระบบ",
+  "Back to homepage": "กลับไปหน้าแรกของเว็บไซต์",
+
+  "Stroke e-Form Demo": "สโตรคอีฟอร์ม เดโม่",
+  "A demo system for stroke patient e-forms, designed for healthcare professionals": "ระบบสาธิตสำหรับแบบฟอร์มผู้ป่วยโรคหลอดเลือดสมอง ออกแบบเพื่อบุคลากรทางการแพทย์"
+}

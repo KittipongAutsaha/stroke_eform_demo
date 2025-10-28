@@ -11,9 +11,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // เรียกใช้ Seeder ที่สร้าง role และ user ตัวอย่าง
         $this->call([
             RolesAndAdminSeeder::class,
+            PatientSeeder::class,
         ]);
     }
 }

@@ -1,10 +1,11 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\AdminUserController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {        // หน้าแรก (public)
-    return view('welcome');          // หรือสร้างหน้า landing ของคุณเอง
+Route::get('/', function () {
+    return view('welcome');
 })->name('home');
 
 Route::get('/dashboard', function () {
@@ -20,5 +21,13 @@ Route::middleware('auth')->group(function () {
 Route::get('/pending-approval', function () {
     return view('auth.pending-approval');
 })->name('pending-approval');
+
+Route::middleware(['auth', 'verified', 'approved', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+        Route::put('/users/{user}/approve', [AdminUserController::class, 'approve'])->name('users.approve');
+    });
 
 require __DIR__ . '/auth.php';

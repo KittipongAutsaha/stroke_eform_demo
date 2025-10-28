@@ -12,6 +12,15 @@
                     {{ __("You're logged in!") }}
                 </div>
             </div>
+
+            @role('admin')
+                <div class="mt-6">
+                    <a href="{{ route('admin.users.index') }}"
+                        class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        {{ __('Approve User') }}
+                    </a>
+                </div>
+            @endrole
         </div>
     </div>
 </x-app-layout>

@@ -1,4 +1,7 @@
 {
+  "Stroke e-Form Demo": "สโตรคอีฟอร์ม เดโม่",
+  "A demo system for stroke patient e-forms, designed for healthcare professionals": "ระบบสาธิตสำหรับแบบฟอร์มผู้ป่วยโรคหลอดเลือดสมอง ออกแบบเพื่อบุคลากรทางการแพทย์",
+
   "Log in": "เข้าสู่ระบบ",
   "Log Out": "ออกจากระบบ",
   "Register": "สมัครใช้งาน",
@@ -11,8 +14,9 @@
   "Already registered?": "มีบัญชีอยู่แล้ว?",
   "Verify Email Address": "ยืนยันอีเมล",
   "Resend Verification Email": "ส่งอีเมลยืนยันอีกครั้ง",
-  "Name": "ชื่อ",
+
   "Profile": "โปรไฟล์",
+  "Name": "ชื่อ",
   "Profile Information": "ข้อมูลโปรไฟล์",
   "Update your account's profile information and email address.": "อัปเดตข้อมูลโปรไฟล์และอีเมลของบัญชีของคุณ",
   "Save": "บันทึก",
@@ -27,10 +31,12 @@
   "Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.": "เมื่อบัญชีของคุณถูกลบ ข้อมูลทั้งหมดจะถูกลบอย่างถาวร ก่อนลบบัญชี โปรดดาวน์โหลดข้อมูลที่คุณต้องการเก็บไว้",
   "Cancel": "ยกเลิก",
   "Edit Profile": "แก้ไขโปรไฟล์",
+
   "Dashboard": "แดชบอร์ด",
   "Back to homepage": "กลับไปหน้าแรกของเว็บไซต์",
   "Your account is not approved yet": "บัญชีของคุณยังไม่ได้รับการอนุมัติ",
   "Please wait for an administrator to approve your account before using the system": "กรุณารอให้ผู้ดูแลระบบอนุมัติบัญชีของคุณก่อนเข้าใช้งานระบบ",
+
   "Register Role": "เลือกบทบาทผู้ใช้ตอนสมัคร",
   "Role": "บทบาทของคุณ",
   "Select Role": "-- เลือกบทบาทของคุณ --",
@@ -40,6 +46,16 @@
   "Please select a role": "กรุณาเลือกบทบาทของคุณ",
   "Register Role Description": "กรุณาเลือกบทบาทที่ตรงกับหน้าที่ของคุณในระบบ",
   "Requested Role Saved": "บันทึกบทบาทที่ผู้ใช้ร้องขอสำเร็จ",
-  "Stroke e-Form Demo": "สโตรคอีฟอร์ม เดโม่",
-  "A demo system for stroke patient e-forms, designed for healthcare professionals": "ระบบสาธิตสำหรับแบบฟอร์มผู้ป่วยโรคหลอดเลือดสมอง ออกแบบเพื่อบุคลากรทางการแพทย์"
+
+  "Approve User": "อนุมัติผู้ใช้",
+  "Approve": "อนุมัติ",
+  "Pending Approval": "รอการอนุมัติ",
+  "Actions": "การดำเนินการ",
+  "Search": "ค้นหา",
+  "No results found.": "ไม่พบข้อมูล",
+  "Requested Role": "บทบาทที่ร้องขอ",
+  "User approved successfully.": "อนุมัติผู้ใช้สำเร็จ",
+  "User is already approved.": "ผู้ใช้นี้ได้รับการอนุมัติแล้ว",
+  "User has no requested role.": "ผู้ใช้นี้ไม่ได้ระบุบทบาทที่ร้องขอ",
+  "Requested role is invalid: :role": "บทบาทที่ร้องขอไม่ถูกต้อง: :role"
 }

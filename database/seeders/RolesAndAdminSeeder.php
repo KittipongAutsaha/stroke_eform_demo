@@ -28,6 +28,7 @@ class RolesAndAdminSeeder extends Seeder
                 'password'    => Hash::make('password'), // เปลี่ยนทีหลังในโปรดักชัน
                 'approved_at' => now(),
                 'email_verified_at' => now(), // demo ให้เข้าได้เลย
+                'requested_role' => 'admin',
             ]
         );
         $admin->assignRole('admin');
@@ -40,6 +41,7 @@ class RolesAndAdminSeeder extends Seeder
                 'password'    => Hash::make('password'),
                 'approved_at' => now(),
                 'email_verified_at' => now(),
+                'requested_role' => 'doctor',
             ]
         );
         $doctor->assignRole('doctor');
@@ -52,6 +54,7 @@ class RolesAndAdminSeeder extends Seeder
                 'password'    => Hash::make('password'),
                 'approved_at' => now(),
                 'email_verified_at' => now(),
+                'requested_role' => 'nurse',
             ]
         );
         $nurse->assignRole('nurse');
@@ -64,6 +67,7 @@ class RolesAndAdminSeeder extends Seeder
                 'password'    => Hash::make('password'),
                 'approved_at' => null,         // ยังไม่อนุมัติ
                 'email_verified_at' => now(),
+                'requested_role' => 'staff',
             ]
         );
         $staff->assignRole('staff');

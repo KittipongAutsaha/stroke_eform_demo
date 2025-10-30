@@ -9,17 +9,37 @@ return new class extends Migration {
     {
         Schema::create('patients', function (Blueprint $table) {
             $table->id();
-            $table->string('hn', 20)->unique()->index();      // รหัสเวชระเบียน (immutable หลังสร้าง)
-            $table->string('cid', 25)->nullable();            // เลขบัตร/เลขประจำตัว (ถ้ามี)
+
+            // รหัสเวชระเบียน (HN) — เป็นคีย์เฉพาะ, ใช้ค้นหาผู้ป่วย
+            $table->string('hn', 20)->unique()->index();
+
+            // เลขบัตรประชาชน (13 หลัก) — อาจว่างได้
+            $table->string('cid', 13)->nullable();
+
+            // ชื่อและนามสกุล
             $table->string('first_name', 100);
             $table->string('last_name', 100);
-            $table->date('dob');                               // วันเกิด (ต้องก่อนวันนี้)
-            $table->enum('sex', ['male', 'female', 'other', 'unknown']);
-            $table->string('address_short', 255)->nullable(); // ที่อยู่ย่อ
-            $table->text('note_general')->nullable();         // บันทึกทั่วไป
-            $table->foreignId('created_by')->constrained('users');
-            $table->foreignId('updated_by')->nullable()->constrained('users');
-            $table->softDeletes();                            // ลบแบบกู้คืนได้ (Admin เท่านั้น)
+
+            // วันเกิด (อาจไม่ระบุได้)
+            $table->date('dob')->nullable();
+
+            // เพศ (ชาย, หญิง, อื่น ๆ, ไม่ระบุ)
+            $table->enum('sex', ['male', 'female', 'other', 'unknown'])->nullable();
+
+            // ที่อยู่ย่อ (เช่น บ้านเลขที่ / ตำบล / อำเภอ)
+            $table->string('address_short', 255)->nullable();
+
+            // หมายเหตุทั่วไป (สำหรับบันทึกเพิ่มเติม)
+            $table->text('note_general')->nullable();
+
+            // ผู้สร้างและผู้แก้ไขข้อมูล (อ้างอิงตาราง users)
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
+
+            // Soft Delete (ใช้เมื่อผู้ดูแลระบบลบข้อมูล)
+            $table->softDeletes();
+
+            // วันที่สร้าง/อัปเดตอัตโนมัติ
             $table->timestamps();
         });
     }

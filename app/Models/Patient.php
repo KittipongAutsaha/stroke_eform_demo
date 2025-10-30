@@ -20,6 +20,8 @@ class Patient extends Model
         'sex',
         'address_short',
         'note_general',
+        'created_by',
+        'updated_by',
     ];
 
     protected $casts = [

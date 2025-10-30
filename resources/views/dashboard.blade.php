@@ -13,11 +13,22 @@
                 </div>
             </div>
 
+            {{-- ปุ่มเฉพาะ Admin: อนุมัติผู้ใช้ --}}
             @role('admin')
                 <div class="mt-6">
                     <a href="{{ route('admin.users.index') }}"
                         class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                         {{ __('Approve User') }}
+                    </a>
+                </div>
+            @endrole
+
+            {{-- ปุ่มเข้าเมนูผู้ป่วย: Admin, Doctor, Nurse เท่านั้น --}}
+            @role('admin|doctor|nurse')
+                <div class="mt-6">
+                    <a href="{{ route('patients.index') }}"
+                        class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                        {{ __('patients.title') }}
                     </a>
                 </div>
             @endrole

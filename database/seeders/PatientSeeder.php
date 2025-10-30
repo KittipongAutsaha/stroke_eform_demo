@@ -13,7 +13,7 @@ class PatientSeeder extends Seeder
         Patient::factory()
             ->count(10)
             ->create([
-                'created_by' => 1, // user id 1 (Admin)
+                'created_by' => 1,
                 'updated_by' => 1,
             ]);
     }

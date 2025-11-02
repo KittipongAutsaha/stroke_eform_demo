@@ -10,37 +10,56 @@ return new class extends Migration {
         Schema::create('patients', function (Blueprint $table) {
             $table->id();
 
-            // รหัสเวชระเบียน (HN) — เป็นคีย์เฉพาะ, ใช้ค้นหาผู้ป่วย
-            $table->string('hn', 20)->unique()->index();
+            // ระบุตัวตนพื้นฐาน
+            $table->string('hn', 20)->unique();
+            $table->string('cid', 32)->nullable()->index();
 
-            // เลขบัตรประชาชน (13 หลัก) — อาจว่างได้
-            $table->string('cid', 13)->nullable();
-
-            // ชื่อและนามสกุล
+            // ชื่อ-สกุล/วันเกิด/เพศ
             $table->string('first_name', 100);
             $table->string('last_name', 100);
-
-            // วันเกิด (อาจไม่ระบุได้)
             $table->date('dob')->nullable();
-
-            // เพศ (ชาย, หญิง, อื่น ๆ, ไม่ระบุ)
             $table->enum('sex', ['male', 'female', 'other', 'unknown'])->nullable();
 
-            // ที่อยู่ย่อ (เช่น บ้านเลขที่ / ตำบล / อำเภอ)
-            $table->string('address_short', 255)->nullable();
+            // ชีวข้อมูล
+            $table->enum('blood_group', ['A', 'B', 'AB', 'O'])->nullable()->index();
+            $table->enum('rh_factor', ['+', '-'])->nullable();
 
-            // หมายเหตุทั่วไป (สำหรับบันทึกเพิ่มเติม)
+            // การติดต่อ/ที่อยู่
+            $table->string('phone', 32)->nullable()->index();
+            $table->string('address_short', 255)->nullable();
+            $table->string('address_full', 1000)->nullable();
+            $table->string('postal_code', 20)->nullable()->index();
+
+            // ผู้ติดต่อฉุกเฉิน
+            $table->string('emergency_contact_name', 100)->nullable();
+            $table->string('emergency_contact_relation', 80)->nullable();
+            $table->string('emergency_contact_phone', 32)->nullable();
+
+            // สัญชาติ/ภาษา
+            $table->string('nationality', 100)->nullable();
+            $table->string('preferred_language', 20)->nullable();
+
+            // สิทธิ์ประกัน
+            $table->string('insurance_scheme', 120)->nullable()->index();
+            $table->string('insurance_no', 100)->nullable()->index();
+
+            // ความยินยอม
+            $table->timestamp('consent_at')->nullable();
+            $table->text('consent_note')->nullable();
+
+            // บันทึกทั่วไป
             $table->text('note_general')->nullable();
 
-            // ผู้สร้างและผู้แก้ไขข้อมูล (อ้างอิงตาราง users)
+            // ผู้สร้าง/แก้ไข (FK -> users)
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
 
-            // Soft Delete (ใช้เมื่อผู้ดูแลระบบลบข้อมูล)
+            // ลบแบบอ่อน + เวลา
             $table->softDeletes();
-
-            // วันที่สร้าง/อัปเดตอัตโนมัติ
             $table->timestamps();
+
+            // ดัชนีรวมที่พบบ่อยในการค้นหา (ปรับได้ตามการใช้งานจริง)
+            $table->index(['last_name', 'first_name', 'dob']);
         });
     }
 

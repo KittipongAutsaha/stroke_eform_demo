@@ -10,14 +10,14 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            {{-- แสดงข้อความเมื่อทำงานสำเร็จ เช่น เพิ่ม/ลบ/แก้ไข --}}
+            {{-- แสดงข้อความสำเร็จ (เพิ่ม/แก้ไข/ลบ) --}}
             @if (session('success'))
                 <div class="mb-4 p-3 bg-green-100 text-green-800 rounded">
                     {{ session('success') }}
                 </div>
             @endif
 
-            {{-- ปุ่มเพิ่มข้อมูลผู้ป่วย --}}
+            {{-- ปุ่มเพิ่มข้อมูลผู้ป่วย (เฉพาะผู้มีสิทธิ์) --}}
             @can('create', \App\Models\Patient::class)
                 <div class="mb-4 flex justify-end">
                     <a href="{{ route('patients.create') }}"
@@ -27,58 +27,96 @@
                 </div>
             @endcan
 
-            {{-- ตารางแสดงข้อมูลผู้ป่วยทั้งหมด --}}
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <table class="min-w-full border border-gray-200">
-                    <thead class="bg-gray-100">
+            {{-- ตารางแสดงข้อมูลผู้ป่วย (เลื่อนแนวนอนได้) --}}
+            <div class="bg-white overflow-x-auto shadow-sm sm:rounded-lg">
+                <table class="min-w-[1200px] table-auto border border-gray-200">
+                    <thead class="bg-gray-100 text-xs uppercase text-gray-600">
                         <tr>
-                            <th class="px-4 py-2 border">{{ __('patients.hn') }}</th>
-                            <th class="px-4 py-2 border">{{ __('patients.cid') }}</th>
-                            <th class="px-4 py-2 border">{{ __('patients.name') }}</th>
-                            <th class="px-4 py-2 border">{{ __('patients.dob') }}</th>
-                            <th class="px-4 py-2 border">{{ __('patients.sex') }}</th>
-                            <th class="px-4 py-2 border">{{ __('patients.address') }}</th>
-                            <th class="px-4 py-2 border">{{ __('patients.note_general') }}</th>
-                            <th class="px-4 py-2 border text-center w-40">{{ __('patients.actions') }}</th>
+                            <th class="px-3 py-2 border whitespace-nowrap">{{ __('patients.hn') }}</th>
+                            <th class="px-3 py-2 border whitespace-nowrap">{{ __('patients.cid') }}</th>
+                            <th class="px-3 py-2 border whitespace-nowrap">{{ __('patients.name') }}</th>
+                            <th class="px-3 py-2 border whitespace-nowrap">{{ __('patients.dob') }}</th>
+                            <th class="px-3 py-2 border whitespace-nowrap">{{ __('patients.sex') }}</th>
+                            <th class="px-3 py-2 border whitespace-nowrap">{{ __('patients.phone') }}</th>
+                            <th class="px-3 py-2 border whitespace-nowrap">
+                                {{ __('patients.blood_group') }}/{{ __('patients.rh_factor') }}</th>
+                            <th class="px-3 py-2 border whitespace-nowrap">{{ __('patients.insurance_scheme') }}</th>
+                            <th class="px-3 py-2 border whitespace-nowrap">{{ __('patients.consent_at') }}</th>
+                            <th class="px-3 py-2 border whitespace-nowrap">{{ __('patients.address') }}</th>
+                            <th class="px-3 py-2 border whitespace-nowrap">{{ __('patients.note_general') }}</th>
+                            <th class="px-3 py-2 border text-center whitespace-nowrap w-40">
+                                {{ __('patients.actions') }}</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {{-- วนลูปแสดงรายชื่อผู้ป่วย --}}
+                    <tbody class="text-sm">
                         @forelse($patients as $patient)
                             <tr class="hover:bg-gray-50">
                                 {{-- HN --}}
-                                <td class="px-4 py-2 border">{{ $patient->hn }}</td>
+                                <td class="px-3 py-2 border align-top">{{ $patient->hn }}</td>
 
                                 {{-- CID --}}
-                                <td class="px-4 py-2 border">{{ $patient->cid ?: '-' }}</td>
+                                <td class="px-3 py-2 border align-top">{{ $patient->cid ?: '-' }}</td>
 
-                                {{-- ชื่อ --}}
-                                <td class="px-4 py-2 border">{{ $patient->first_name }} {{ $patient->last_name }}</td>
+                                {{-- ชื่อ-นามสกุล --}}
+                                <td class="px-3 py-2 border align-top whitespace-nowrap">
+                                    {{ $patient->first_name }} {{ $patient->last_name }}
+                                </td>
 
                                 {{-- วันเกิด --}}
-                                <td class="px-4 py-2 border">
+                                <td class="px-3 py-2 border align-top">
                                     {{ $patient->dob ? $patient->dob->format('d/m/Y') : '-' }}
                                 </td>
 
-                                {{-- เพศ --}}
-                                <td class="px-4 py-2 border">{{ $patient->sex ?? '-' }}</td>
+                                {{-- เพศ (ใช้ label แปลจาก th.json) --}}
+                                <td class="px-3 py-2 border align-top">
+                                    {{ $patient->sex ? __('patients.' . $patient->sex) : '-' }}
+                                </td>
 
-                                {{-- ที่อยู่ --}}
-                                <td class="px-4 py-2 border">{{ $patient->address_short ?? '-' }}</td>
+                                {{-- เบอร์โทร --}}
+                                <td class="px-3 py-2 border align-top whitespace-nowrap">
+                                    {{ $patient->phone ?: '-' }}
+                                </td>
 
-                                {{-- หมายเหตุ --}}
-                                <td class="px-4 py-2 border">
+                                {{-- หมู่เลือด / Rh --}}
+                                <td class="px-3 py-2 border align-top whitespace-nowrap">
+                                    {{ $patient->blood_group ?: '-' }}{{ $patient->rh_factor ? $patient->rh_factor : '' }}
+                                </td>
+
+                                {{-- สิทธิ์ประกัน --}}
+                                <td class="px-3 py-2 border align-top">
+                                    <span class="inline-block max-w-[220px] truncate"
+                                        title="{{ $patient->insurance_scheme }}">
+                                        {{ $patient->insurance_scheme ?: '-' }}
+                                    </span>
+                                </td>
+
+                                {{-- วันที่ให้ความยินยอม --}}
+                                <td class="px-3 py-2 border align-top whitespace-nowrap">
+                                    {{ $patient->consent_at ? $patient->consent_at->format('d/m/Y H:i') : '-' }}
+                                </td>
+
+                                {{-- ที่อยู่ย่อ --}}
+                                <td class="px-3 py-2 border align-top">
+                                    <span class="inline-block max-w-[240px] truncate"
+                                        title="{{ $patient->address_short }}">
+                                        {{ $patient->address_short ?? '-' }}
+                                    </span>
+                                </td>
+
+                                {{-- หมายเหตุทั่วไป --}}
+                                <td class="px-3 py-2 border align-top">
                                     @if ($patient->note_general)
-                                        <span title="{{ $patient->note_general }}">
-                                            {{ \Illuminate\Support\Str::limit($patient->note_general, 40) }}
+                                        <span class="inline-block max-w-[260px] truncate"
+                                            title="{{ $patient->note_general }}">
+                                            {{ $patient->note_general }}
                                         </span>
                                     @else
                                         -
                                     @endif
                                 </td>
 
-                                {{-- ปุ่มจัดการ (ดู / แก้ไข / ลบ) --}}
-                                <td class="px-4 py-2 border text-center">
+                                {{-- ปุ่มจัดการ --}}
+                                <td class="px-3 py-2 border text-center align-top whitespace-nowrap">
                                     @can('view', $patient)
                                         <a href="{{ route('patients.show', $patient) }}"
                                             class="text-gray-700 hover:underline">
@@ -94,7 +132,6 @@
                                     @endcan
 
                                     @can('delete', $patient)
-                                        {{-- ฟอร์มลบ --}}
                                         <form action="{{ route('patients.destroy', $patient) }}" method="POST"
                                             class="inline"
                                             onsubmit="return confirm('{{ __('patients.confirm_delete') }}')">
@@ -108,9 +145,8 @@
                                 </td>
                             </tr>
                         @empty
-                            {{-- กรณีไม่มีข้อมูล --}}
                             <tr>
-                                <td colspan="8" class="px-4 py-3 text-center text-gray-500">
+                                <td colspan="12" class="px-4 py-3 text-center text-gray-500">
                                     {{ __('patients.no_data') }}
                                 </td>
                             </tr>
@@ -119,10 +155,11 @@
                 </table>
             </div>
 
-            {{-- ส่วนแสดงปุ่มเปลี่ยนหน้า pagination --}}
+            {{-- pagination --}}
             <div class="mt-4">
                 {{ $patients->links() }}
             </div>
+
         </div>
     </div>
 </x-app-layout>

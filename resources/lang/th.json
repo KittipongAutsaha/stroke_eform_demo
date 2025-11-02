@@ -3,16 +3,58 @@
 
   "patients.title": "รายการผู้ป่วยทั้งหมด",
   "patients.add_new": "เพิ่มผู้ป่วยใหม่",
-  "patients.detail": "รายละเอียดผู้ป่วย",
-  "patients.hn": "HN",
+
+  "patients.show.title": "รายละเอียดผู้ป่วย",
+  "patients.show.toc": "สารบัญ",
+  "patients.section.identity": "ข้อมูลระบุตัวตน",
+  "patients.section.demographic": "ข้อมูลประชากร",
+  "patients.section.blood": "หมู่เลือด & Rh",
+  "patients.section.address_contact": "ที่อยู่ & การติดต่อ",
+  "patients.section.emergency_contact": "ข้อมูลผู้ติดต่อฉุกเฉิน",
+  "patients.section.insurance": "ข้อมูลสิทธิ์ประกัน",
+  "patients.section.consent": "ความยินยอม",
+  "patients.section.notes_general": "หมายเหตุทั่วไป",
+
+  "patients.actions.back": "ย้อนกลับ",
+  "patients.actions.edit": "แก้ไข",
+  "patients.actions.delete": "ลบ",
+  "patients.empty": "-",
+
+  "patients.hn": "รหัสผู้ป่วย (HN)",
   "patients.cid": "เลขประจำตัวประชาชน (13 หลัก)",
   "patients.first_name": "ชื่อ",
   "patients.last_name": "นามสกุล",
   "patients.name": "ชื่อ-นามสกุล",
+  "patients.full_name": "ชื่อ-นามสกุล",
   "patients.dob": "วันเกิด",
   "patients.sex": "เพศ",
+  "patients.male": "ชาย",
+  "patients.female": "หญิง",
+  "patients.other": "อื่น ๆ",
+  "patients.unknown": "ไม่ระบุ",
   "patients.select_sex": "-- เลือกเพศ --",
+  "patients.phone": "หมายเลขโทรศัพท์",
+  "patients.blood_group": "หมู่เลือด",
+  "patients.select_blood": "-- เลือกหมู่เลือด --",
+  "patients.rh_factor": "Rh Factor",
+  "patients.select_rh": "-- เลือกค่า Rh --",
   "patients.address": "ที่อยู่ย่อ",
+  "patients.address_short": "ที่อยู่ย่อ",
+  "patients.address_full": "ที่อยู่เต็ม",
+  "patients.postal_code": "รหัสไปรษณีย์",
+
+  "patients.emergency_contact": "ข้อมูลผู้ติดต่อฉุกเฉิน",
+  "patients.emergency_contact_name": "ชื่อผู้ติดต่อฉุกเฉิน",
+  "patients.emergency_contact_relation": "ความสัมพันธ์กับผู้ป่วย",
+  "patients.emergency_contact_phone": "เบอร์โทรผู้ติดต่อฉุกเฉิน",
+
+  "patients.insurance": "ข้อมูลสิทธิ์ประกัน",
+  "patients.insurance_scheme": "สิทธิ์ประกัน",
+  "patients.insurance_no": "หมายเลขสิทธิ์ประกัน",
+
+  "patients.consent_at": "วันที่ให้ความยินยอม",
+  "patients.consent_note": "บันทึกความยินยอม",
+
   "patients.note_general": "หมายเหตุทั่วไป",
   "patients.actions": "การจัดการ",
   "patients.view": "ดู",
@@ -84,37 +126,52 @@
   "Stroke e-Form Demo": "สโตรคอีฟอร์ม เดโม่",
   "A demo system for stroke patient e-forms, designed for healthcare professionals": "ระบบสาธิตสำหรับแบบฟอร์มผู้ป่วยโรคหลอดเลือดสมอง ออกแบบเพื่อบุคลากรทางการแพทย์",
 
-  "validation": {
-    "hn_required": "กรุณากรอกหมายเลข HN",
-    "hn_string": "HN ต้องเป็นตัวอักษรเท่านั้น",
-    "hn_regex": "รูปแบบ HN ต้องเป็น HN-ตัวเลข 7 หลัก เช่น HN-1234567",
-    "hn_unique": "HN นี้มีอยู่ในระบบแล้ว",
-    "hn_prohibited": "ห้ามแก้ไข HN",
+  "validation.hn_required": "กรุณากรอกหมายเลข HN",
+  "validation.hn_string": "HN ต้องเป็นตัวอักษรเท่านั้น",
+  "validation.hn_regex": "รูปแบบ HN ต้องเป็น HN-ตัวเลข 7 หลัก เช่น HN-1234567",
+  "validation.hn_unique": "HN นี้มีอยู่ในระบบแล้ว",
+  "validation.hn_prohibited": "ห้ามแก้ไข HN",
 
-    "cid_numeric": "รหัสบัตรประชาชนต้องเป็นตัวเลขเท่านั้น",
-    "cid_min_digits": "รหัสบัตรประชาชนต้องมีอย่างน้อย 13 หลัก",
-    "cid_max_digits": "รหัสบัตรประชาชนต้องไม่เกิน 13 หลัก",
+  "validation.cid_numeric": "รหัสบัตรประชาชนต้องเป็นตัวเลขเท่านั้น",
+  "validation.cid_min_digits": "รหัสบัตรประชาชนต้องมีอย่างน้อย 13 หลัก",
+  "validation.cid_max_digits": "รหัสบัตรประชาชนต้องไม่เกิน 13 หลัก",
 
-    "first_name_required": "กรุณากรอกชื่อ",
-    "first_name_string": "ชื่อต้องเป็นข้อความเท่านั้น",
-    "first_name_max": "ชื่อต้องไม่เกิน 100 ตัวอักษร",
+  "validation.first_name_required": "กรุณากรอกชื่อ",
+  "validation.first_name_string": "ชื่อต้องเป็นข้อความเท่านั้น",
+  "validation.first_name_max": "ชื่อต้องไม่เกิน 100 ตัวอักษร",
 
-    "last_name_required": "กรุณากรอกนามสกุล",
-    "last_name_string": "นามสกุลต้องเป็นข้อความเท่านั้น",
-    "last_name_max": "นามสกุลต้องไม่เกิน 100 ตัวอักษร",
+  "validation.last_name_required": "กรุณากรอกนามสกุล",
+  "validation.last_name_string": "นามสกุลต้องเป็นข้อความเท่านั้น",
+  "validation.last_name_max": "นามสกุลต้องไม่เกิน 100 ตัวอักษร",
 
-    "dob_required": "กรุณาระบุวันเกิด",
-    "dob_date": "วันเกิดต้องอยู่ในรูปแบบวันที่ที่ถูกต้อง",
-    "dob_date_format": "วันเกิดต้องอยู่ในรูปแบบ YYYY-MM-DD",
-    "dob_before": "วันเกิดต้องเป็นวันที่ก่อนวันนี้เท่านั้น",
+  "validation.dob_required": "กรุณาระบุวันเกิด",
+  "validation.dob_date": "วันเกิดต้องอยู่ในรูปแบบวันที่ที่ถูกต้อง",
+  "validation.dob_date_format": "วันเกิดต้องอยู่ในรูปแบบ YYYY-MM-DD",
+  "validation.dob_before": "วันเกิดต้องเป็นวันที่ก่อนวันนี้เท่านั้น",
 
-    "sex_required": "กรุณาเลือกเพศ",
-    "sex_in": "ค่าเพศต้องเป็น male, female, other หรือ unknown",
+  "validation.sex_required": "กรุณาเลือกเพศ",
+  "validation.sex_in": "ค่าเพศต้องเป็น male, female, other หรือ unknown",
 
-    "address_short_string": "ที่อยู่ต้องเป็นข้อความเท่านั้น",
-    "address_short_max": "ที่อยู่ต้องไม่เกิน 255 ตัวอักษร",
+  "validation.phone_regex": "หมายเลขโทรศัพท์ต้องเป็นตัวเลข 9-10 หลัก และขึ้นต้นด้วยเลข 0",
+  "validation.postal_code_digits_between": "รหัสไปรษณีย์ต้องมีความยาวระหว่าง 4 ถึง 10 หลัก",
 
-    "note_general_string": "หมายเหตุต้องเป็นข้อความเท่านั้น",
-    "note_general_max": "หมายเหตุต้องไม่เกิน 500 ตัวอักษร"
-  }
+  "validation.blood_group_in": "หมู่เลือดต้องเป็น A, B, AB หรือ O",
+  "validation.rh_factor_in": "ค่า Rh ต้องเป็น + หรือ -",
+
+  "validation.address_short_string": "ที่อยู่ต้องเป็นข้อความเท่านั้น",
+  "validation.address_short_max": "ที่อยู่ต้องไม่เกิน 255 ตัวอักษร",
+  "validation.address_full_string": "ที่อยู่เต็มต้องเป็นข้อความเท่านั้น",
+
+  "validation.note_general_string": "หมายเหตุต้องเป็นข้อความเท่านั้น",
+  "validation.note_general_max": "หมายเหตุต้องไม่เกิน 500 ตัวอักษร",
+
+  "validation.insurance_scheme_string": "สิทธิ์ประกันต้องเป็นข้อความเท่านั้น",
+  "validation.insurance_no_string": "หมายเลขสิทธิ์ประกันต้องเป็นข้อความเท่านั้น",
+
+  "validation.consent_at_date": "วันที่ให้ความยินยอมต้องเป็นวันที่ที่ถูกต้อง",
+  "validation.consent_note_string": "บันทึกความยินยอมต้องเป็นข้อความเท่านั้น",
+
+  "validation.emergency_contact_name_string": "ชื่อผู้ติดต่อฉุกเฉินต้องเป็นข้อความเท่านั้น",
+  "validation.emergency_contact_relation_string": "ความสัมพันธ์ต้องเป็นข้อความเท่านั้น",
+  "validation.emergency_contact_phone_regex": "เบอร์โทรผู้ติดต่อฉุกเฉินต้องเป็นตัวเลข 9-10 หลัก และขึ้นต้นด้วยเลข 0"
 }

@@ -30,13 +30,13 @@ class DoctorNoteFactory extends Factory
             DoctorNote::STATUS_CANCELLED,
         ]);
 
-        $now = Carbon::now();
         $scheduledFor = null;
         $recordedAt = null;
         $signedOffAt = null;
 
         if ($status === DoctorNote::STATUS_PLANNED) {
             $scheduledFor = $this->faker->dateTimeBetween('+1 hour', '+3 days');
+            $recordedAt = Carbon::instance($scheduledFor);
         } elseif ($status === DoctorNote::STATUS_IN_PROGRESS) {
             $scheduledFor = $this->faker->dateTimeBetween('-2 days', 'now');
             $recordedAt = $this->faker->dateTimeBetween($scheduledFor, 'now');
@@ -46,6 +46,8 @@ class DoctorNoteFactory extends Factory
             $signedOffAt = $this->faker->dateTimeBetween($recordedAt, 'now');
         } else {
             $scheduledFor = $this->faker->dateTimeBetween('-2 days', '+2 days');
+            $recordedAt = Carbon::now();
+            $signedOffAt = Carbon::now();
         }
 
         $patientId = Patient::inRandomOrder()->value('id') ?? Patient::factory();
@@ -66,15 +68,17 @@ class DoctorNoteFactory extends Factory
             'chief_complaint' => $this->faker->randomElement($chiefs),
             'diagnosis' => $this->faker->randomElement($diagnoses),
             'differential_diagnosis' => $this->faker->randomElement($diffs),
-            'clinical_summary' => 'อาการเริ่มเมื่อ ' . $this->faker->numberBetween(1, 6) . ' ชั่วโมงก่อนมา ร่วมกับ ' . $this->faker->randomElement($chiefs) . ' มีปัจจัยเสี่ยง HT/DM ตามประวัติญาติให้ข้อมูล',
+            'clinical_summary' => $this->faker->boolean(70)
+                ? ('อาการเริ่มเมื่อ ' . $this->faker->numberBetween(1, 6) . ' ชั่วโมงก่อนมา ร่วมกับ ' . $this->faker->randomElement($chiefs) . ' มีปัจจัยเสี่ยง HT/DM ตามประวัติญาติให้ข้อมูล')
+                : null,
             'physical_exam' => $this->faker->randomElement($examSnippets),
-            'nihss_score' => $nihss,
-            'gcs_score' => $gcs,
-            'imaging_summary' => $this->faker->randomElement($imagingSnippets),
-            'lvo_suspected' => $lvo,
-            'treatment_plan' => $this->faker->randomElement($plans),
-            'orders' => $this->faker->randomElement($ordersList),
-            'prescription_note' => $this->faker->randomElement($rxNotes),
+            'nihss_score' => $this->faker->boolean(80) ? $nihss : null,
+            'gcs_score' => $this->faker->boolean(80) ? $gcs : null,
+            'imaging_summary' => $this->faker->boolean(80) ? $this->faker->randomElement($imagingSnippets) : null,
+            'lvo_suspected' => $this->faker->boolean(80) ? $lvo : null,
+            'treatment_plan' => $this->faker->boolean(70) ? $this->faker->randomElement($plans) : null,
+            'orders' => $this->faker->boolean(70) ? $this->faker->randomElement($ordersList) : null,
+            'prescription_note' => $this->faker->boolean(70) ? $this->faker->randomElement($rxNotes) : null,
             'created_by_ip' => $this->faker->ipv4(),
             'updated_by_ip' => $this->faker->ipv4(),
             'created_at' => $this->faker->dateTimeBetween('-30 days', 'now'),
@@ -86,9 +90,9 @@ class DoctorNoteFactory extends Factory
     {
         return $this->state(fn(array $attributes) => [
             'status' => DoctorNote::STATUS_PLANNED,
-            'recorded_at' => null,
-            'signed_off_at' => null,
             'scheduled_for' => Carbon::now()->addDay(),
+            'recorded_at' => Carbon::now()->addDay(),
+            'signed_off_at' => null,
         ]);
     }
 
@@ -96,9 +100,9 @@ class DoctorNoteFactory extends Factory
     {
         return $this->state(fn(array $attributes) => [
             'status' => DoctorNote::STATUS_IN_PROGRESS,
+            'scheduled_for' => Carbon::now()->subHours(2),
             'recorded_at' => Carbon::now(),
             'signed_off_at' => null,
-            'scheduled_for' => Carbon::now()->subHours(2),
         ]);
     }
 
@@ -106,9 +110,9 @@ class DoctorNoteFactory extends Factory
     {
         return $this->state(fn(array $attributes) => [
             'status' => DoctorNote::STATUS_SIGNED_OFF,
+            'scheduled_for' => Carbon::now()->subHours(2),
             'recorded_at' => Carbon::now()->subHour(),
             'signed_off_at' => Carbon::now(),
-            'scheduled_for' => Carbon::now()->subHours(2),
         ]);
     }
 
@@ -116,8 +120,9 @@ class DoctorNoteFactory extends Factory
     {
         return $this->state(fn(array $attributes) => [
             'status' => DoctorNote::STATUS_CANCELLED,
-            'recorded_at' => null,
-            'signed_off_at' => null,
+            'scheduled_for' => Carbon::now()->addHours(6),
+            'recorded_at' => Carbon::now(),
+            'signed_off_at' => Carbon::now(),
         ]);
     }
 }

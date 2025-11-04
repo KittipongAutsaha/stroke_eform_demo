@@ -21,20 +21,20 @@ return new class extends Migration
             // สถานะและเวลา
             $table->enum('status', ['planned', 'in_progress', 'signed_off', 'cancelled'])->default('planned');
             $table->dateTime('scheduled_for')->nullable()->comment('วันและเวลานัดหมาย');
-            $table->dateTime('recorded_at')->nullable()->comment('วันและเวลาเริ่มตรวจจริง');
+            $table->dateTime('recorded_at')->comment('วันและเวลาเริ่มตรวจจริง');
             $table->dateTime('signed_off_at')->nullable()->comment('วันและเวลาที่เซ็นปิดเคส');
 
             // ข้อมูลทางการแพทย์
             $table->string('chief_complaint')->comment('อาการหลักที่ผู้ป่วยบอก');
             $table->text('diagnosis')->comment('การวินิจฉัยหลัก');
             $table->text('differential_diagnosis')->nullable()->comment('การวินิจฉัยแยกโรค');
-            $table->text('clinical_summary')->comment('สรุปภาพรวมทางคลินิก');
+            $table->text('clinical_summary')->nullable()->comment('สรุปภาพรวมทางคลินิก');
             $table->text('physical_exam')->comment('ผลการตรวจร่างกาย');
-            $table->unsignedTinyInteger('nihss_score')->comment('คะแนน NIHSS');
+            $table->unsignedTinyInteger('nihss_score')->nullable()->comment('คะแนน NIHSS');
             $table->unsignedTinyInteger('gcs_score')->nullable()->comment('คะแนน GCS');
-            $table->text('imaging_summary')->comment('สรุปผลภาพถ่ายรังสี');
+            $table->text('imaging_summary')->nullable()->comment('สรุปผลภาพถ่ายรังสี');
             $table->boolean('lvo_suspected')->nullable()->comment('สงสัย LVO หรือไม่');
-            $table->text('treatment_plan')->comment('แผนการรักษา');
+            $table->text('treatment_plan')->nullable()->comment('แผนการรักษา');
             $table->text('orders')->nullable()->comment('คำสั่งทางการแพทย์');
             $table->text('prescription_note')->nullable()->comment('หมายเหตุเกี่ยวกับยา');
 

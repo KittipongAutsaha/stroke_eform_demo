@@ -88,10 +88,8 @@ class DoctorNote extends Model
 
     public function scopeMine($query, $doctorId = null)
     {
-        // ใช้ Auth::id() แทน auth()->id() และกันกรณี null
         $doctorId = $doctorId ?? Auth::id();
 
-        // ถ้าไม่มีผู้ใช้ล็อกอิน (เช่นตอน factory/seeder) ให้คืน query ว่าง (ป้องกันดึงทั้งหมดโดยไม่ตั้งใจ)
         if (!$doctorId) {
             return $query->whereRaw('1=0');
         }
@@ -117,5 +115,19 @@ class DoctorNote extends Model
     public function scopeSignedOff($query)
     {
         return $query->where('status', self::STATUS_SIGNED_OFF);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Helpers
+    |--------------------------------------------------------------------------
+    */
+    /**
+     * ตรวจสอบว่า note ถูกล็อก (ปิดเคสแล้วหรือไม่)
+     * ใช้ใน Controller / Policy / View เพื่อกันการแก้ไข-ลบ
+     */
+    public function isLocked(): bool
+    {
+        return in_array($this->status, [self::STATUS_SIGNED_OFF, self::STATUS_CANCELLED]);
     }
 }

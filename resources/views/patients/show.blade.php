@@ -189,30 +189,41 @@
                         </div>
                     </section>
 
-                    {{-- ปุ่มกลับ / แก้ไข / ลบ --}}
-                    <div class="flex justify-between sm:justify-end sm:space-x-2 pt-2">
-                        <a href="{{ route('patients.index') }}"
-                            class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 text-gray-900">
-                            {{ __('patients.actions.back') }}
-                        </a>
-
-                        @can('update', $patient)
-                            <a href="{{ route('patients.edit', $patient->id) }}"
-                                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                                {{ __('patients.actions.edit') }}
+                    {{-- ปุ่มกลับ / บันทึกแพทย์ / แก้ไข / ลบ --}}
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-2">
+                        <div class="flex gap-2">
+                            <a href="{{ route('patients.index') }}"
+                                class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 text-gray-900">
+                                {{ __('patients.actions.back') }}
                             </a>
-                        @endcan
 
-                        @can('delete', $patient)
-                            <form action="{{ route('patients.destroy', $patient->id) }}" method="POST" class="inline"
-                                onsubmit="return confirm('{{ __('patients.confirm_delete') }}')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
-                                    {{ __('patients.actions.delete') }}
-                                </button>
-                            </form>
-                        @endcan
+                            @can('viewAny', \App\Models\DoctorNote::class)
+                                <a href="{{ route('patients.doctor-notes.index', $patient) }}"
+                                    class="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700">
+                                    {{ __('doctor_notes.title') }}
+                                </a>
+                            @endcan
+                        </div>
+
+                        <div class="flex gap-2 sm:justify-end">
+                            @can('update', $patient)
+                                <a href="{{ route('patients.edit', $patient->id) }}"
+                                    class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                                    {{ __('patients.actions.edit') }}
+                                </a>
+                            @endcan
+
+                            @can('delete', $patient)
+                                <form action="{{ route('patients.destroy', $patient->id) }}" method="POST" class="inline"
+                                    onsubmit="return confirm('{{ __('patients.confirm_delete') }}')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+                                        {{ __('patients.actions.delete') }}
+                                    </button>
+                                </form>
+                            @endcan
+                        </div>
                     </div>
                 </div>
             @endcan

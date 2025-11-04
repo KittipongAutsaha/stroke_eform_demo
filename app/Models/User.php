@@ -51,4 +51,10 @@ class User extends Authenticatable
     {
         return ! is_null($this->approved_at);
     }
+
+    // ความสัมพันธ์: ผู้ใช้ (หมอ) มี doctor notes หลายรายการ
+    public function doctorNotes()
+    {
+        return $this->hasMany(DoctorNote::class, 'doctor_id');
+    }
 }

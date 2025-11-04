@@ -73,4 +73,16 @@ class Patient extends Model
 
         return trim("{$this->address_full} {$this->postal_code}");
     }
+
+    // ความสัมพันธ์: ผู้ป่วยมี doctor notes หลายรายการ
+    public function doctorNotes()
+    {
+        return $this->hasMany(DoctorNote::class);
+    }
+
+    // ความสัมพันธ์: รายชื่อหมอทั้งหมดที่เคยดูแลผู้ป่วยรายนี้ (distinct ผ่านตาราง doctor_notes)
+    public function doctors()
+    {
+        return $this->belongsToMany(User::class, 'doctor_notes', 'patient_id', 'doctor_id')->distinct();
+    }
 }

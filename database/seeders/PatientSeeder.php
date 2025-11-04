@@ -10,10 +10,13 @@ class PatientSeeder extends Seeder
 {
     public function run(): void
     {
-        // ดึง user id แรก ถ้าไม่มี user ให้เป็น null
-        $userId = User::query()->value('id'); // ไม่มี user → null
+        // พยายามใช้ admin เป็นผู้สร้าง/แก้ไข (ถ้ามี)
+        $userId = User::where('requested_role', 'admin')->value('id');
 
-        // สร้างผู้ป่วยจำลอง 10 ราย
+        // สำรอง: ถ้าไม่มี admin (เช่นรัน seeder นี้เดี่ยว ๆ) ให้ใช้ user แรก หรือ null ถ้าไม่มีผู้ใช้เลย
+        $userId = $userId ?? User::query()->value('id');
+
+        // จำนวนผู้ป่วย: 10 ราย
         Patient::factory()
             ->count(10)
             ->create([

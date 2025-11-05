@@ -85,4 +85,16 @@ class Patient extends Model
     {
         return $this->belongsToMany(User::class, 'doctor_notes', 'patient_id', 'doctor_id')->distinct();
     }
+
+    // ความสัมพันธ์: ผู้ป่วยมี nurse notes หลายรายการ
+    public function nurseNotes()
+    {
+        return $this->hasMany(NurseNote::class);
+    }
+
+    // ความสัมพันธ์: รายชื่อพยาบาลทั้งหมดที่เคยดูแลผู้ป่วยรายนี้ (distinct ผ่านตาราง nurse_notes)
+    public function nurses()
+    {
+        return $this->belongsToMany(User::class, 'nurse_notes', 'patient_id', 'nurse_id')->distinct();
+    }
 }

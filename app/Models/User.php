@@ -13,9 +13,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable, HasRoles;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
+     * Attributes ที่สามารถบันทึกผ่าน Mass Assignment ได้
      */
     protected $fillable = [
         'name',
@@ -25,9 +23,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
+     * Attributes ที่ซ่อนระหว่าง serialization
      */
     protected $hidden = [
         'password',
@@ -35,9 +31,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Casts — ใช้แปลงชนิดข้อมูลอัตโนมัติ
      */
     protected function casts(): array
     {
@@ -47,14 +41,35 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * ตรวจสอบว่า user ผ่านการอนุมัติหรือยัง
+     */
     public function isApproved(): bool
     {
         return ! is_null($this->approved_at);
     }
 
-    // ความสัมพันธ์: ผู้ใช้ (หมอ) มี doctor notes หลายรายการ
+    // ----------------------------------------------------------------------
+    // ความสัมพันธ์กับ DoctorNote
+    // ----------------------------------------------------------------------
+
+    /**
+     * ความสัมพันธ์: ผู้ใช้ (หมอ) มี doctor notes หลายรายการ
+     */
     public function doctorNotes()
     {
         return $this->hasMany(DoctorNote::class, 'doctor_id');
+    }
+
+    // ----------------------------------------------------------------------
+    // ความสัมพันธ์กับ NurseNote
+    // ----------------------------------------------------------------------
+
+    /**
+     * ความสัมพันธ์: ผู้ใช้ (พยาบาล) มี nurse notes หลายรายการ
+     */
+    public function nurseNotes()
+    {
+        return $this->hasMany(NurseNote::class, 'nurse_id');
     }
 }

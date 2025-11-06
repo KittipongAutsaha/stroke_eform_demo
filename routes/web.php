@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\DoctorNoteController;
+use App\Http\Controllers\NurseNoteController;
 
 // หน้าแรก
 Route::get('/', function () {
@@ -37,12 +38,13 @@ Route::middleware(['auth', 'verified', 'approved', 'role:admin'])
         Route::put('/users/{user}/approve', [AdminUserController::class, 'approve'])->name('users.approve');
     });
 
-// หน้าข้อมูลคนไข้พื้นฐาน + บันทึกแพทย์ (Nested Resource)
+// หน้าข้อมูลคนไข้พื้นฐาน + บันทึกแพทย์/พยาบาล (Nested Resource)
 Route::middleware(['auth', 'verified', 'approved', 'deny.staff'])->group(function () {
     Route::resource('patients', PatientController::class);
 
-    // ประกาศ nested resource ให้ได้ชื่อ route แบบ patients.doctor-notes.*
+    // ประกาศ nested resource ให้ได้ชื่อ route แบบ patients.doctor-notes.* / patients.nurse-notes.*
     Route::resource('patients.doctor-notes', DoctorNoteController::class);
+    Route::resource('patients.nurse-notes', NurseNoteController::class);
 });
 
 require __DIR__ . '/auth.php';

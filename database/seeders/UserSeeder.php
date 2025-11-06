@@ -15,9 +15,18 @@ class UserSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
-        // มอบ role 'doctor' ให้หมอทุกคน
         foreach ($doctors as $doctor) {
             $doctor->assignRole('doctor');
+        }
+
+        // สร้างพยาบาลเดโม่ใหม่ (3 คน)
+        $nurses = User::factory()->count(3)->nurse()->create([
+            'approved_at'       => now(),
+            'email_verified_at' => now(),
+        ]);
+
+        foreach ($nurses as $nurse) {
+            $nurse->assignRole('nurse');
         }
 
         // สร้าง staff ที่อนุมัติแล้ว 1 คน

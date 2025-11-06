@@ -242,5 +242,53 @@
   "validation.doctor_notes.gcs_score_min": "คะแนน GCS ต้องไม่ต่ำกว่า 0",
   "validation.doctor_notes.gcs_score_max": "คะแนน GCS ต้องไม่เกิน 15",
 
+  "nurse_notes.title": "บันทึกพยาบาล",
+  "nurse_notes.index.title": "รายการบันทึกพยาบาล",
+  "nurse_notes.create.title": "เพิ่มบันทึกพยาบาล",
+  "nurse_notes.edit.title": "แก้ไขบันทึกพยาบาล",
+  "nurse_notes.show.title": "รายละเอียดบันทึกพยาบาล",
+
+  "nurse_notes.actions.add": "เพิ่มบันทึก",
+  "nurse_notes.actions.save": "บันทึก",
+  "nurse_notes.actions.update": "อัปเดต",
+  "nurse_notes.actions.delete": "ลบ",
+  "nurse_notes.actions.view": "ดู",
+  "nurse_notes.actions.edit": "แก้ไข",
+  "nurse_notes.confirm_delete": "ยืนยันการลบบันทึกพยาบาลนี้หรือไม่?",
+  "nurse_notes.empty": "ยังไม่มีบันทึกพยาบาล",
+
+  "nurse_notes.patient": "ผู้ป่วย",
+  "nurse_notes.nurse": "พยาบาลผู้บันทึก",
+  "nurse_notes.status": "สถานะ",
+  "nurse_notes.status.planned": "นัดหมาย",
+  "nurse_notes.status.in_progress": "กำลังดูแล",
+  "nurse_notes.status.signed_off": "สรุปผลแล้ว",
+  "nurse_notes.status.cancelled": "ยกเลิก",
+
+  "nurse_notes.nursing_assessment": "การประเมินทางการพยาบาล",
+  "nurse_notes.vital_signs_summary": "สรุปสัญญาณชีพ",
+  "nurse_notes.nursing_diagnosis": "การวินิจฉัยทางการพยาบาล",
+  "nurse_notes.nursing_care_plan": "แผนการพยาบาล",
+  "nurse_notes.interventions_summary": "กิจกรรมการพยาบาล",
+  "nurse_notes.progress_note": "บันทึกความก้าวหน้า",
+  "nurse_notes.education_or_safety_note": "การให้ความรู้/ความปลอดภัย",
+  "nurse_notes.sign_note": "บันทึกลายเซ็น",
+  "nurse_notes.scheduled_for": "นัดหมาย",
+  "nurse_notes.recorded_at": "เวลาบันทึก",
+  "nurse_notes.signed_off_at": "เวลาลงนาม",
+
+  "nurse_notes.created": "สร้างบันทึกพยาบาลสำเร็จ",
+  "nurse_notes.updated": "อัปเดตบันทึกพยาบาลสำเร็จ",
+  "nurse_notes.deleted": "ลบบันทึกพยาบาลสำเร็จ",
+  "nurse_notes.locked": "บันทึกนี้ถูกปิดจบแล้ว ไม่สามารถแก้ไขได้",
+
+  "validation.nurse_notes.nursing_assessment_required": "กรุณากรอกการประเมินทางการพยาบาล",
+  "validation.nurse_notes.vital_signs_summary_required": "กรุณากรอกสรุปสัญญาณชีพ",
+  "validation.nurse_notes.nursing_care_plan_required": "กรุณากรอกแผนการพยาบาล",
+  "validation.nurse_notes.status_in": "สถานะต้องเป็น planned, in_progress, signed_off หรือ cancelled",
+  "validation.nurse_notes.recorded_at_date_format": "เวลาบันทึกต้องอยู่ในรูปแบบ YYYY-MM-DDTHH:MM",
+  "validation.nurse_notes.scheduled_for_date_format": "วันนัดหมายต้องอยู่ในรูปแบบ YYYY-MM-DDTHH:MM",
+  "validation.nurse_notes.signed_off_at_prohibited": "ห้ามระบุเวลาลงนาม ระบบจะตั้งให้อัตโนมัติเมื่อปิดเคส",
+
   "Are you sure you want to delete this note?": "คุณแน่ใจหรือไม่ว่าต้องการลบบันทึกนี้?"
 }

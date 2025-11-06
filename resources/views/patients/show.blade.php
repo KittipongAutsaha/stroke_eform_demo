@@ -189,7 +189,7 @@
                         </div>
                     </section>
 
-                    {{-- ปุ่มกลับ / บันทึกแพทย์ / แก้ไข / ลบ --}}
+                    {{-- ปุ่มกลับ / บันทึกแพทย์ / บันทึกพยาบาล / แก้ไข / ลบ --}}
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-2">
                         <div class="flex gap-2">
                             <a href="{{ route('patients.index') }}"
@@ -201,6 +201,13 @@
                                 <a href="{{ route('patients.doctor-notes.index', $patient) }}"
                                     class="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700">
                                     {{ __('doctor_notes.title') }}
+                                </a>
+                            @endcan
+
+                            @can('viewAny', \App\Models\NurseNote::class)
+                                <a href="{{ route('patients.nurse-notes.index', $patient) }}"
+                                    class="px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700">
+                                    {{ __('nurse_notes.title') }}
                                 </a>
                             @endcan
                         </div>

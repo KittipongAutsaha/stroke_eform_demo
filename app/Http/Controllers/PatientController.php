@@ -1,10 +1,13 @@
 <?php
 
+/** @method bool hasRole($role) */
+
 namespace App\Http\Controllers;
 
 use App\Models\Patient;
 use App\Http\Requests\PatientStoreRequest;
 use App\Http\Requests\PatientUpdateRequest;
+use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -12,14 +15,78 @@ use Illuminate\View\View;
 class PatientController extends Controller
 {
     /**
-     * แสดงรายชื่อผู้ป่วยทั้งหมด
+     * แสดงรายชื่อผู้ป่วยทั้งหมด / ค้นหาผู้ป่วย
+     * - ไม่มี q → แสดงรายการทั้งหมด (ล่าสุดก่อน)
+     * - มี q → ค้นหาแบบ Exact ก่อน แล้วจึง LIKE และจัดลำดับผลลัพธ์ให้ Exact อยู่บนสุด
+     * - กรณีพบเพียง 1 รายการเมื่อมี q → ไปหน้าแสดงรายละเอียด (เฉพาะบทบาทที่อนุญาตให้ดูได้)
      */
-    public function index(): View
+    public function index(Request $request): View|RedirectResponse
     {
-        // แสดงรายการผู้ป่วยทั้งหมด (เรียงจากใหม่ไปเก่า)
-        $patients = Patient::latest()->paginate(20);
+        $q = trim((string) $request->query('q', ''));
 
-        return view('patients.index', compact('patients'));
+        // กรณีไม่มีคำค้นหา → แสดงรายการทั้งหมดแบบ paginate
+        if ($q === '') {
+            $patients = Patient::latest()->paginate(20)->withQueryString();
+            return view('patients.index', compact('patients', 'q'));
+        }
+
+        // กรณีมีคำค้นหา → สร้างเงื่อนไข Exact + LIKE
+        $builder = Patient::query()
+            ->where(function ($sub) use ($q) {
+                // Exact matches: hn, cid, phone, full_name (first_name + ' ' + last_name)
+                $sub->orWhere('hn', $q)
+                    ->orWhere('cid', $q)
+                    ->orWhere('phone', $q)
+                    ->orWhereRaw("CONCAT(first_name,' ',last_name) = ?", [$q]);
+
+                // LIKE matches: first_name, last_name, hn (partial)
+                $sub->orWhere('first_name', 'like', "%{$q}%")
+                    ->orWhere('last_name', 'like', "%{$q}%")
+                    ->orWhere('hn', 'like', "%{$q}%");
+            })
+            // จัดลำดับ: Exact อยู่บนสุด แล้วค่อย LIKE
+            ->orderByRaw("
+                CASE
+                    WHEN hn = ? THEN 0
+                    WHEN cid = ? THEN 0
+                    WHEN phone = ? THEN 0
+                    WHEN CONCAT(first_name,' ',last_name) = ? THEN 0
+                    WHEN first_name LIKE ? THEN 1
+                    WHEN last_name LIKE ? THEN 1
+                    WHEN hn LIKE ? THEN 1
+                    ELSE 2
+                END
+            ", [$q, $q, $q, $q, "%{$q}%", "%{$q}%", "%{$q}%"])
+            ->latest('id'); // ตัวกันกรณีคะแนนเท่ากัน ให้ล่าสุดมาก่อน
+
+        // ตรวจจำนวนผลลัพธ์เบื้องต้น
+        $peek = (clone $builder)->limit(2)->get(['id']);
+
+        // ถ้าพบเพียง 1 รายการ:
+        // - บทบาท staff → แสดงตาราง (ไม่ redirect)
+        // - บทบาทอื่นที่อนุญาต → redirect ไปหน้า show
+        if ($peek->count() === 1) {
+            $user = Auth::user(); // มี auth middleware ครอบ จึงคาดว่ามีเสมอ
+            if ($user && $user->hasRole('staff')) {
+                $patients = $builder->paginate(20)->withQueryString();
+                return view('patients.index', compact('patients', 'q'));
+            }
+
+            return redirect()->route('patients.show', ['patient' => $peek->first()->id]);
+        }
+
+        // ไม่พบผลลัพธ์เมื่อมีการค้นหา → ส่งหน้า index ว่างพร้อมข้อความ
+        if ($peek->isEmpty()) {
+            // แสดงหน้ารายการว่าง แต่คง q ไว้เพื่อให้ผู้ใช้แก้คำค้นได้
+            // หมายเหตุ: ใช้ paginate บนคิวรีที่ไม่คืนผลลัพธ์ เพื่อให้ UX หน้าเดียวกัน
+            $patients = Patient::whereRaw('1=0')->paginate(20)->withQueryString();
+            return view('patients.index', compact('patients', 'q'))
+                ->with('warning', __('No results found.'));
+        }
+
+        // พบหลายรายการ → แสดงตารางผลลัพธ์
+        $patients = $builder->paginate(20)->withQueryString();
+        return view('patients.index', compact('patients', 'q'));
     }
 
     /**

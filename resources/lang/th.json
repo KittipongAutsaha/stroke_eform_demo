@@ -1,6 +1,9 @@
 {
   "Dashboard": "แดชบอร์ด",
 
+  "Search": "ค้นหา",
+  "Search patient by HN / Name / CID / Phone": "ค้นหาผู้ป่วยด้วย HN / ชื่อ / บัตรประชาชน / เบอร์โทร",
+
   "patients.title": "รายการผู้ป่วยทั้งหมด",
   "patients.add_new": "เพิ่มผู้ป่วยใหม่",
 
@@ -120,7 +123,6 @@
   "Your account is not approved yet": "บัญชีของคุณยังไม่ได้รับการอนุมัติ",
   "Please wait for an administrator to approve your account before using the system": "กรุณารอให้ผู้ดูแลระบบอนุมัติบัญชีของคุณก่อนเข้าใช้งานระบบ",
 
-  "Search": "ค้นหา",
   "Actions": "การดำเนินการ",
   "No results found.": "ไม่พบข้อมูล",
   "Back to homepage": "กลับไปหน้าแรกของเว็บไซต์",

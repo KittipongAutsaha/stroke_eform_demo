@@ -10,10 +10,34 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            {{-- แสดงข้อความสำเร็จ (เพิ่ม/แก้ไข/ลบ) --}}
+            {{-- แถบค้นหา: รับ q ผ่าน query string แล้วส่งกลับมาที่หน้านี้ --}}
+            <div class="mb-4">
+                <form action="{{ route('patients.index') }}" method="GET" class="flex flex-col sm:flex-row gap-3">
+                    <input type="text" name="q" value="{{ $q ?? '' }}"
+                        placeholder="{{ __('Search patient by HN / Name / CID / Phone') }}"
+                        class="w-full sm:w-2/3 border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <button type="submit"
+                        class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        {{ __('Search') }}
+                    </button>
+                </form>
+
+                {{-- แสดงหัวข้อผลการค้นหาเมื่อมี q --}}
+                @if (isset($q) && $q !== '')
+                    <p class="mt-2 text-sm text-gray-600">ผลการค้นหา: <span
+                            class="font-medium">{{ $q }}</span></p>
+                @endif
+            </div>
+
+            {{-- แสดงข้อความสำเร็จ (เพิ่ม/แก้ไข/ลบ) / คำเตือนเมื่อไม่พบผลลัพธ์ --}}
             @if (session('success'))
                 <div class="mb-4 p-3 bg-green-100 text-green-800 rounded">
                     {{ session('success') }}
+                </div>
+            @endif
+            @if (session('warning'))
+                <div class="mb-4 p-3 bg-yellow-100 text-yellow-800 rounded">
+                    {{ session('warning') }}
                 </div>
             @endif
 
@@ -147,7 +171,12 @@
                         @empty
                             <tr>
                                 <td colspan="12" class="px-4 py-3 text-center text-gray-500">
-                                    {{ __('patients.no_data') }}
+                                    {{-- ถ้ามี q แต่ไม่มีผล → แจ้งไม่พบข้อมูล, ถ้าไม่มี q → ใช้ข้อความรายการว่างทั่วไป --}}
+                                    @if (isset($q) && $q !== '')
+                                        {{ __('No results found.') }}
+                                    @else
+                                        {{ __('patients.no_data') }}
+                                    @endif
                                 </td>
                             </tr>
                         @endforelse
@@ -157,7 +186,7 @@
 
             {{-- pagination --}}
             <div class="mt-4">
-                {{ $patients->links() }}
+                {{ $patients->withQueryString()->links() }}
             </div>
 
         </div>

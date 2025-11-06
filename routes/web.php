@@ -38,9 +38,22 @@ Route::middleware(['auth', 'verified', 'approved', 'role:admin'])
         Route::put('/users/{user}/approve', [AdminUserController::class, 'approve'])->name('users.approve');
     });
 
-// หน้าข้อมูลคนไข้พื้นฐาน + บันทึกแพทย์/พยาบาล (Nested Resource)
+// ---------------------------------------------------------
+// โซนผู้ป่วยพื้นฐาน
+// - เปิดให้ทุกบทบาทที่ผ่าน auth/verified/approved เข้าถึงหน้า 'index' ได้
+//   เพื่อรองรับการค้นหาผู้ป่วยผ่าน query string (?q=...)
+// - เส้นทางอื่นของ patients (create/show/edit/store/update/destroy) ถูกป้องกันด้วย deny.staff
+// ---------------------------------------------------------
+
+// หน้า 'รายการผู้ป่วย' (รองรับการค้นหา ?q=...) : อนุญาต Staff เข้าถึงได้เพื่อดูผลลัพธ์/ปุ่มพิมพ์ตามสิทธิ์
+Route::middleware(['auth', 'verified', 'approved'])
+    ->get('/patients', [PatientController::class, 'index'])
+    ->name('patients.index');
+
+// หน้าข้อมูลคนไข้พื้นฐาน + บันทึกแพทย์/พยาบาล (ยกเว้น index)
+// - ป้องกัน Staff ด้วย deny.staff ตามนโยบายการเข้าถึงหน้าฟอร์ม/รายละเอียด
 Route::middleware(['auth', 'verified', 'approved', 'deny.staff'])->group(function () {
-    Route::resource('patients', PatientController::class);
+    Route::resource('patients', PatientController::class)->except(['index']);
 
     // ประกาศ nested resource ให้ได้ชื่อ route แบบ patients.doctor-notes.* / patients.nurse-notes.*
     Route::resource('patients.doctor-notes', DoctorNoteController::class);

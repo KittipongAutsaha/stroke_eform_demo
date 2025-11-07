@@ -197,6 +197,7 @@
                                 {{ __('patients.actions.back') }}
                             </a>
 
+                            {{-- ปุ่มเข้าหน้า Doctor Notes: แสดงเมื่อผู้ใช้มีสิทธิ์ viewAny เท่านั้น --}}
                             @can('viewAny', \App\Models\DoctorNote::class)
                                 <a href="{{ route('patients.doctor-notes.index', $patient) }}"
                                     class="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700">
@@ -204,6 +205,7 @@
                                 </a>
                             @endcan
 
+                            {{-- ปุ่มเข้าหน้า Nurse Notes: แสดงเมื่อผู้ใช้มีสิทธิ์ viewAny เท่านั้น --}}
                             @can('viewAny', \App\Models\NurseNote::class)
                                 <a href="{{ route('patients.nurse-notes.index', $patient) }}"
                                     class="px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700">

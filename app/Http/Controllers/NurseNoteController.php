@@ -112,18 +112,19 @@ class NurseNoteController extends Controller
 
     /**
      * อัปเดตบันทึกพยาบาล
-     * - ล็อกการแก้ไขเมื่อบันทึกถูกปิดเคสแล้ว (status ∈ {signed_off, cancelled})
+     * - ล็อกการแก้ไขเมื่อบันทึกถูกปิดเคสแล้ว (isLocked())
      * - อนุญาตการเปลี่ยนสถานะตาม flow เท่านั้น:
      *     • planned     → in_progress
      *     • planned     → cancelled   → ตั้ง signed_off_at = now()
      *     • in_progress → signed_off  → ตั้ง signed_off_at = now()
+     * - กรองค่า null ออกจากข้อมูลก่อนอัปเดตเพื่อป้องกันทับค่าเดิมด้วย null
      */
     public function update(NurseNoteUpdateRequest $request, Patient $patient, NurseNote $nurse_note): RedirectResponse
     {
         abort_unless((int) $nurse_note->patient_id === (int) $patient->id, 404);
 
-        // ถ้าบันทึกถูกปิดเคสแล้ว → ห้ามแก้ไข
-        if (in_array($nurse_note->status, ['signed_off', 'cancelled'], true)) {
+        // ถ้าบันทึกถูกปิดเคสแล้ว (isLocked) → ห้ามแก้ไข
+        if ($nurse_note->isLocked()) {
             return redirect()
                 ->route('patients.nurse-notes.show', [$patient, $nurse_note])
                 ->with('error', __('nurse_notes.locked'));
@@ -159,11 +160,12 @@ class NurseNoteController extends Controller
             }
         }
 
-        // ป้องกันการตั้งค่าเวลาลงนามเอง
+        // ป้องกันการตั้งค่าเวลาลงนามเองจากฟอร์มยกเว้นที่ระบบกำหนดใน transition
         if (isset($data['signed_off_at']) && ! isset($data['status'])) {
             unset($data['signed_off_at']);
         }
 
+        // กรองคีย์ที่มีค่า null ออกก่อนอัปเดต (กัน ConvertEmptyStringsToNull)
         $data = array_filter($data, static fn($value) => !is_null($value));
         $data['updated_by_ip'] = $request->ip();
 
@@ -180,6 +182,7 @@ class NurseNoteController extends Controller
     public function destroy(Patient $patient, NurseNote $nurse_note): RedirectResponse
     {
         abort_unless((int) $nurse_note->patient_id === (int) $patient->id, 404);
+        // ย้ำตรวจสิทธิ์ลบระดับ Action (กันกรณี authorizeResource ไม่ทำงานจากชื่อพารามิเตอร์ route)
         $this->authorize('delete', $nurse_note);
 
         $nurse_note->delete();

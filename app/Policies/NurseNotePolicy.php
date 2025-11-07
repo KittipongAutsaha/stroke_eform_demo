@@ -7,27 +7,28 @@ use App\Models\NurseNote;
 
 /**
  * กำหนดสิทธิ์การเข้าถึง Nurse Notes ตามบทบาท:
- * - Admin, Nurse: สร้าง/แก้ไขได้ (แต่ห้ามแก้เมื่อบันทึกถูกปิดเคสแล้ว)
+ * - Admin: ทำได้เกือบทั้งหมด ยกเว้น "แก้ไข" เมื่อบันทึกถูกปิดจบ (signed_off/cancelled);
+ *          แต่ยังสามารถลบแบบ soft delete ได้เสมอ
+ * - Nurse: สร้าง/แก้ไขได้เฉพาะของตนเองและเฉพาะตอนยังไม่ปิดจบ
  * - Doctor: ดูได้เท่านั้น (view-only)
  * - Staff: ไม่อนุญาต
- * ป้องกัน cross-patient เพื่อไม่ให้เข้าถึงข้อมูลคนไข้ข้ามกัน
+ * ป้องกัน cross-patient ไม่ให้เข้าถึงข้อมูลคนไข้ข้ามกัน
  */
 class NurseNotePolicy
 {
-    /** อนุญาตให้เห็นรายการบันทึกพยาบาลทั้งหมด */
+    /** อนุญาตให้เห็นรายการบันทึกพยาบาลทั้งหมด (Admin/Doctor/Nurse) */
     public function viewAny(User $user): bool
     {
         return $user->hasAnyRole(['admin', 'doctor', 'nurse']);
     }
 
-    /** อนุญาตให้ดูบันทึกพยาบาลเฉพาะของผู้ป่วยใน route เดียวกัน */
+    /** อนุญาตให้ดูบันทึกพยาบาลเฉพาะของผู้ป่วยเดียวกัน */
     public function view(User $user, NurseNote $nurseNote): bool
     {
         if ($this->isCrossPatient($nurseNote)) {
             return false;
         }
 
-        // Doctor/Nurse/Admin ดูได้
         return $user->hasAnyRole(['admin', 'doctor', 'nurse']);
     }
 
@@ -44,39 +45,33 @@ class NurseNotePolicy
             return false;
         }
 
-        // หากปิดเคสแล้ว (signed_off/cancelled) ห้ามแก้ไขทุกบทบาท รวมถึงแอดมิน
-        if (method_exists($nurseNote, 'isLocked') && $nurseNote->isLocked()) {
+        // หากปิดจบแล้ว → ห้ามแก้ไขทุกบทบาท (รวม Admin)
+        if ($nurseNote->isLocked()) {
             return false;
         }
 
-        // Admin แก้ได้เมื่อยังไม่ปิดเคส
+        // Admin แก้ได้เมื่อยังไม่ปิดจบ
         if ($user->hasRole('admin')) {
             return true;
         }
 
-        // Nurse แก้ได้เฉพาะของตัวเอง และยังไม่ปิดเคส
+        // Nurse แก้ได้เฉพาะของตนเอง
         if ($user->hasRole('nurse')) {
             return (int) $nurseNote->nurse_id === (int) $user->id;
         }
 
-        // Doctor และบทบาทอื่นห้ามแก้ไข
+        // Doctor และบทบาทอื่นแก้ไม่ได้
         return false;
     }
 
-    /** อนุญาตให้ลบเฉพาะ Admin */
+    /** soft delete ได้เฉพาะ Admin */
     public function delete(User $user, NurseNote $nurseNote): bool
     {
         if ($this->isCrossPatient($nurseNote)) {
             return false;
         }
 
-        // Admin ลบได้ทุกกรณี
-        if ($user->hasRole('admin')) {
-            return true;
-        }
-
-        // บทบาทอื่นห้ามลบ
-        return false;
+        return $user->hasRole('admin');
     }
 
     /** อนุญาตให้กู้คืนเฉพาะ Admin */
@@ -91,13 +86,15 @@ class NurseNotePolicy
         return false;
     }
 
-    /** ป้องกันการเข้าถึงข้ามคนไข้ */
+    /** ตรวจว่ากำลังเข้าถึงข้อมูลของ patient คนอื่นหรือไม่ */
     protected function isCrossPatient(NurseNote $nurseNote): bool
     {
         $patient = request()->route('patient');
+
         if (!$patient) {
             return false;
         }
+
         return (int) $nurseNote->patient_id !== (int) $patient->id;
     }
 }

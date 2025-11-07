@@ -24,8 +24,9 @@
 
                 {{-- แสดงหัวข้อผลการค้นหาเมื่อมี q --}}
                 @if (isset($q) && $q !== '')
-                    <p class="mt-2 text-sm text-gray-600">ผลการค้นหา: <span
-                            class="font-medium">{{ $q }}</span></p>
+                    <p class="mt-2 text-sm text-gray-600">
+                        {{ __('Search results for') }}: <span class="font-medium">{{ $q }}</span>
+                    </p>
                 @endif
             </div>
 
@@ -51,7 +52,7 @@
                 </div>
             @endcan
 
-            {{-- ตารางแสดงข้อมูลผู้ป่วย (เลื่อนแนวนอนได้) --}}
+            {{-- ตารางแสดงข้อมูลผู้ป่วย (Basic Info เท่านั้น) --}}
             <div class="bg-white overflow-x-auto shadow-sm sm:rounded-lg">
                 <table class="min-w-[1200px] table-auto border border-gray-200">
                     <thead class="bg-gray-100 text-xs uppercase text-gray-600">
@@ -91,7 +92,7 @@
                                     {{ $patient->dob ? $patient->dob->format('d/m/Y') : '-' }}
                                 </td>
 
-                                {{-- เพศ (ใช้ label แปลจาก th.json) --}}
+                                {{-- เพศ --}}
                                 <td class="px-3 py-2 border align-top">
                                     {{ $patient->sex ? __('patients.' . $patient->sex) : '-' }}
                                 </td>

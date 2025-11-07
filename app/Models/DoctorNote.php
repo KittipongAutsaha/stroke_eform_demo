@@ -99,7 +99,7 @@ class DoctorNote extends Model
 
     public function scopeEditable($query)
     {
-        return $query->whereNull('signed_off_at');
+        return $query->whereNotIn('status', [self::STATUS_SIGNED_OFF, self::STATUS_CANCELLED]);
     }
 
     public function scopePlanned($query)
@@ -122,12 +122,8 @@ class DoctorNote extends Model
     | Helpers
     |--------------------------------------------------------------------------
     */
-    /**
-     * ตรวจสอบว่า note ถูกล็อก (ปิดเคสแล้วหรือไม่)
-     * ใช้ใน Controller / Policy / View เพื่อกันการแก้ไข-ลบ
-     */
     public function isLocked(): bool
     {
-        return in_array($this->status, [self::STATUS_SIGNED_OFF, self::STATUS_CANCELLED]);
+        return in_array($this->status, [self::STATUS_SIGNED_OFF, self::STATUS_CANCELLED], true);
     }
 }

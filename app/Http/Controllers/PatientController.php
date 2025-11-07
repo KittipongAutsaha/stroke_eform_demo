@@ -1,7 +1,5 @@
 <?php
 
-/** @method bool hasRole($role) */
-
 namespace App\Http\Controllers;
 
 use App\Models\Patient;
@@ -18,7 +16,7 @@ class PatientController extends Controller
      * แสดงรายชื่อผู้ป่วยทั้งหมด / ค้นหาผู้ป่วย
      * - ไม่มี q → แสดงรายการทั้งหมด (ล่าสุดก่อน)
      * - มี q → ค้นหาแบบ Exact ก่อน แล้วจึง LIKE และจัดลำดับผลลัพธ์ให้ Exact อยู่บนสุด
-     * - กรณีพบเพียง 1 รายการเมื่อมี q → ไปหน้าแสดงรายละเอียด (เฉพาะบทบาทที่อนุญาตให้ดูได้)
+     * - กรณีพบเพียง 1 รายการเมื่อมี q → redirect ไปหน้า show
      */
     public function index(Request $request): View|RedirectResponse
     {
@@ -57,31 +55,21 @@ class PatientController extends Controller
                     ELSE 2
                 END
             ", [$q, $q, $q, $q, "%{$q}%", "%{$q}%", "%{$q}%"])
-            ->latest('id'); // ตัวกันกรณีคะแนนเท่ากัน ให้ล่าสุดมาก่อน
+            ->latest('id'); // กันกรณีคะแนนเท่ากัน ให้ล่าสุดมาก่อน
 
         // ตรวจจำนวนผลลัพธ์เบื้องต้น
         $peek = (clone $builder)->limit(2)->get(['id']);
 
-        // ถ้าพบเพียง 1 รายการ:
-        // - บทบาท staff → แสดงตาราง (ไม่ redirect)
-        // - บทบาทอื่นที่อนุญาต → redirect ไปหน้า show
-        if ($peek->count() === 1) {
-            $user = Auth::user(); // มี auth middleware ครอบ จึงคาดว่ามีเสมอ
-            if ($user && $user->hasRole('staff')) {
-                $patients = $builder->paginate(20)->withQueryString();
-                return view('patients.index', compact('patients', 'q'));
-            }
-
-            return redirect()->route('patients.show', ['patient' => $peek->first()->id]);
-        }
-
         // ไม่พบผลลัพธ์เมื่อมีการค้นหา → ส่งหน้า index ว่างพร้อมข้อความ
         if ($peek->isEmpty()) {
-            // แสดงหน้ารายการว่าง แต่คง q ไว้เพื่อให้ผู้ใช้แก้คำค้นได้
-            // หมายเหตุ: ใช้ paginate บนคิวรีที่ไม่คืนผลลัพธ์ เพื่อให้ UX หน้าเดียวกัน
             $patients = Patient::whereRaw('1=0')->paginate(20)->withQueryString();
             return view('patients.index', compact('patients', 'q'))
                 ->with('warning', __('No results found.'));
+        }
+
+        // พบเพียง 1 รายการ → redirect ไปหน้า show
+        if ($peek->count() === 1) {
+            return redirect()->route('patients.show', ['patient' => $peek->first()->id]);
         }
 
         // พบหลายรายการ → แสดงตารางผลลัพธ์
@@ -94,6 +82,9 @@ class PatientController extends Controller
      */
     public function create(): View
     {
+        // ควบคุมสิทธิ์การสร้างตาม Policy
+        $this->authorize('create', Patient::class);
+
         return view('patients.create');
     }
 
@@ -102,6 +93,9 @@ class PatientController extends Controller
      */
     public function store(PatientStoreRequest $request): RedirectResponse
     {
+        // ควบคุมสิทธิ์การสร้างตาม Policy
+        $this->authorize('create', Patient::class);
+
         // ตรวจสอบความถูกต้องของข้อมูล
         $data = $request->validated();
 
@@ -123,6 +117,9 @@ class PatientController extends Controller
      */
     public function show(Patient $patient): View
     {
+        // ควบคุมสิทธิ์การดูตาม Policy (รองรับบทบาทที่ดูได้)
+        $this->authorize('view', $patient);
+
         return view('patients.show', compact('patient'));
     }
 
@@ -133,23 +130,40 @@ class PatientController extends Controller
      */
     public function edit(Patient $patient): View
     {
+        // ควบคุมสิทธิ์การแก้ไขข้อมูลทั่วไป (ยกเว้น HN จะตรวจใน update)
+        $this->authorize('update', $patient);
+
         return view('patients.edit', compact('patient'));
     }
 
     /**
      * บันทึกการแก้ไขข้อมูลผู้ป่วย
+     * - ตรวจสอบสิทธิ์แก้ HN: เฉพาะ Admin เท่านั้น
+     * - หากไม่ใช่ Admin ให้ตัดคีย์ hn ออกจาก payload เพื่อความปลอดภัย (defense-in-depth)
      */
     public function update(PatientUpdateRequest $request, Patient $patient): RedirectResponse
     {
+        // ควบคุมสิทธิ์การแก้ไขข้อมูลทั่วไป
+        $this->authorize('update', $patient);
+
         // ตรวจสอบความถูกต้องของข้อมูล
         $data = $request->validated();
 
         // ระบุผู้แก้ไขล่าสุด
         $data['updated_by'] = Auth::id();
 
-        // ตรวจสอบสิทธิ์การแก้ไข HN (เฉพาะ Admin เท่านั้น)
-        if ($request->has('hn')) {
-            $this->authorize('editHn', $patient);
+        // ควบคุมการแก้ไข HN: อนุญาตเฉพาะ Admin
+        $user = Auth::user();
+        $isAdmin = $user && $user->hasRole('admin');
+
+        if (!$isAdmin) {
+            // ไม่ใช่ Admin → กันการอัปเดต HN โดยตรงที่ payload
+            unset($data['hn']);
+        } else {
+            // เป็น Admin และมีส่ง hn มาด้วย → ตรวจสิทธิ์ตาม Policy
+            if (array_key_exists('hn', $data)) {
+                $this->authorize('editHn', $patient);
+            }
         }
 
         // อัปเดตข้อมูลผู้ป่วย
@@ -166,6 +180,9 @@ class PatientController extends Controller
      */
     public function destroy(Patient $patient): RedirectResponse
     {
+        // ควบคุมสิทธิ์การลบตาม Policy (Admin เท่านั้น)
+        $this->authorize('delete', $patient);
+
         // ทำ Soft Delete
         $patient->delete();
 

@@ -112,7 +112,7 @@ class DoctorNoteController extends Controller
 
     /**
      * อัปเดตบันทึกแพทย์
-     * - ล็อกการแก้ไขเมื่อบันทึกถูกปิดเคสแล้ว (status ∈ {signed_off, cancelled})
+     * - ล็อกการแก้ไขเมื่อบันทึกถูกปิดเคสแล้ว (isLocked())
      * - อนุญาตการเปลี่ยนสถานะตาม flow เท่านั้น:
      *     • planned     → in_progress (เริ่มรักษา; ไม่ตั้ง signed_off_at)
      *     • planned     → cancelled   → ตั้ง signed_off_at = now()
@@ -123,8 +123,8 @@ class DoctorNoteController extends Controller
     {
         abort_unless((int) $doctor_note->patient_id === (int) $patient->id, 404);
 
-        // ถ้าบันทึกถูกปิดเคสแล้ว → ห้ามแก้ไข (เฟส 1: ยังไม่มีสิทธิ์ override)
-        if (in_array($doctor_note->status, ['signed_off', 'cancelled'], true)) {
+        // ถ้าบันทึกถูกปิดเคสแล้ว (isLocked) → ห้ามแก้ไข
+        if ($doctor_note->isLocked()) {
             return redirect()
                 ->route('patients.doctor-notes.show', [$patient, $doctor_note])
                 ->with('error', __('doctor_notes.locked'));

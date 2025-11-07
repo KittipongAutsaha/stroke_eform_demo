@@ -1,4 +1,16 @@
 {{-- resources/views/nurse_notes/form.blade.php --}}
+
+{{-- ใช้ Policy-only คุมการเข้าถึงฟอร์มตั้งแต่ชั้น View --}}
+@if ($mode === 'edit')
+    @cannot('update', $note)
+        @php return; @endphp
+    @endcannot
+@else
+    @cannot('create', \App\Models\NurseNote::class)
+        @php return; @endphp
+    @endcannot
+@endif
+
 <x-app-layout>
     {{-- ส่วนหัวของหน้า --}}
     <x-slot name="header">
@@ -30,13 +42,34 @@
                     </div>
                 @endif
 
+                @php
+                    // ควบคุมสถานะ + lock logic
+                    $current = old('status', $note->status);
+                    if ($mode === 'create') {
+                        $availableStatuses = ['planned', 'in_progress'];
+                        $isLocked = false;
+                    } else {
+                        if ($current === 'in_progress') {
+                            $availableStatuses = ['in_progress', 'signed_off'];
+                        } elseif ($current === 'planned') {
+                            $availableStatuses = ['planned', 'in_progress', 'cancelled'];
+                        } else {
+                            // signed_off / cancelled → ปิดเคสแล้ว
+                            $availableStatuses = [$current];
+                        }
+                        $isLocked = in_array($current, ['signed_off', 'cancelled'], true);
+                    }
+                    // ถ้า lock แล้ว → read-only (disable ทุก input)
+                    $readOnly = $mode === 'edit' && $isLocked;
+                    $fmt = fn($dt) => $dt ? $dt->format('Y-m-d\TH:i') : '';
+                @endphp
+
                 {{-- ฟอร์มหลัก --}}
                 <form
                     @if ($mode === 'edit') action="{{ route('patients.nurse-notes.update', [$patient, $note]) }}"
                     @else
                         action="{{ route('patients.nurse-notes.store', $patient) }}" @endif
                     method="POST" class="space-y-6" novalidate>
-
                     @csrf
                     @if ($mode === 'edit')
                         @method('PUT')
@@ -48,7 +81,8 @@
                             {{ __('nurse_notes.nursing_assessment') }} <span class="text-red-500">*</span>
                         </label>
                         <textarea id="nursing_assessment" name="nursing_assessment" rows="3"
-                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">{{ old('nursing_assessment', $note->nursing_assessment) }}</textarea>
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            @disabled($readOnly)>{{ old('nursing_assessment', $note->nursing_assessment) }}</textarea>
                     </div>
 
                     {{-- สรุปสัญญาณชีพ --}}
@@ -57,7 +91,8 @@
                             {{ __('nurse_notes.vital_signs_summary') }} <span class="text-red-500">*</span>
                         </label>
                         <textarea id="vital_signs_summary" name="vital_signs_summary" rows="2"
-                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">{{ old('vital_signs_summary', $note->vital_signs_summary) }}</textarea>
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            @disabled($readOnly)>{{ old('vital_signs_summary', $note->vital_signs_summary) }}</textarea>
                     </div>
 
                     {{-- การวินิจฉัยทางการพยาบาล / แผนการพยาบาล --}}
@@ -67,14 +102,16 @@
                                 {{ __('nurse_notes.nursing_diagnosis') }}
                             </label>
                             <textarea id="nursing_diagnosis" name="nursing_diagnosis" rows="3"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">{{ old('nursing_diagnosis', $note->nursing_diagnosis) }}</textarea>
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                @disabled($readOnly)>{{ old('nursing_diagnosis', $note->nursing_diagnosis) }}</textarea>
                         </div>
                         <div>
                             <label for="nursing_care_plan" class="block text-sm font-medium text-gray-700">
                                 {{ __('nurse_notes.nursing_care_plan') }} <span class="text-red-500">*</span>
                             </label>
                             <textarea id="nursing_care_plan" name="nursing_care_plan" rows="3"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">{{ old('nursing_care_plan', $note->nursing_care_plan) }}</textarea>
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                @disabled($readOnly)>{{ old('nursing_care_plan', $note->nursing_care_plan) }}</textarea>
                         </div>
                     </div>
 
@@ -85,14 +122,16 @@
                                 {{ __('nurse_notes.interventions_summary') }}
                             </label>
                             <textarea id="interventions_summary" name="interventions_summary" rows="3"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">{{ old('interventions_summary', $note->interventions_summary) }}</textarea>
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                @disabled($readOnly)>{{ old('interventions_summary', $note->interventions_summary) }}</textarea>
                         </div>
                         <div>
                             <label for="progress_note" class="block text-sm font-medium text-gray-700">
                                 {{ __('nurse_notes.progress_note') }}
                             </label>
                             <textarea id="progress_note" name="progress_note" rows="3"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">{{ old('progress_note', $note->progress_note) }}</textarea>
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                @disabled($readOnly)>{{ old('progress_note', $note->progress_note) }}</textarea>
                         </div>
                     </div>
 
@@ -103,19 +142,20 @@
                                 {{ __('nurse_notes.education_or_safety_note') }}
                             </label>
                             <textarea id="education_or_safety_note" name="education_or_safety_note" rows="3"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">{{ old('education_or_safety_note', $note->education_or_safety_note) }}</textarea>
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                @disabled($readOnly)>{{ old('education_or_safety_note', $note->education_or_safety_note) }}</textarea>
                         </div>
                         <div>
                             <label for="sign_note" class="block text-sm font-medium text-gray-700">
                                 {{ __('nurse_notes.sign_note') }}
                             </label>
                             <textarea id="sign_note" name="sign_note" rows="3"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">{{ old('sign_note', $note->sign_note) }}</textarea>
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                @disabled($readOnly)>{{ old('sign_note', $note->sign_note) }}</textarea>
                         </div>
                     </div>
 
                     {{-- วันนัดหมาย / เวลาบันทึก --}}
-                    @php $fmt = fn($dt) => $dt ? $dt->format('Y-m-d\TH:i') : ''; @endphp
                     <div class="grid sm:grid-cols-2 gap-6">
                         <div>
                             <label for="scheduled_for" class="block text-sm font-medium text-gray-700">
@@ -123,7 +163,8 @@
                             </label>
                             <input type="datetime-local" id="scheduled_for" name="scheduled_for"
                                 value="{{ old('scheduled_for', $fmt($note->scheduled_for ?? null)) }}"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                @disabled($readOnly)>
                         </div>
                         <div>
                             <label for="recorded_at" class="block text-sm font-medium text-gray-700">
@@ -131,39 +172,25 @@
                             </label>
                             <input type="datetime-local" id="recorded_at" name="recorded_at"
                                 value="{{ old('recorded_at', $fmt($note->recorded_at ?? now())) }}"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                @disabled($readOnly)>
                         </div>
                     </div>
 
                     {{-- สถานะ --}}
-                    @php
-                        $current = old('status', $note->status);
-                        if ($mode === 'create') {
-                            $availableStatuses = ['planned', 'in_progress'];
-                        } else {
-                            if ($current === 'in_progress') {
-                                $availableStatuses = ['in_progress', 'signed_off'];
-                            } elseif ($current === 'planned') {
-                                $availableStatuses = ['planned', 'in_progress', 'cancelled'];
-                            } else {
-                                $availableStatuses = [$current]; // signed_off / cancelled → ปิดเคสแล้ว
-                            }
-                        }
-                        $isLocked = in_array($current, ['signed_off', 'cancelled'], true);
-                    @endphp
-
                     <div class="sm:w-72">
                         <label for="status" class="block text-sm font-medium text-gray-700">
                             {{ __('nurse_notes.status') }} <span class="text-red-500">*</span>
                         </label>
 
-                        @if ($isLocked && $mode === 'edit')
+                        @if ($readOnly)
                             {{-- ปิดเคสแล้ว: แสดงสถานะปัจจุบันแบบอ่านอย่างเดียว --}}
                             <input type="text" readonly value="{{ __('nurse_notes.status.' . $current) }}"
                                 class="mt-1 block w-full rounded-md bg-gray-100 border-gray-300 text-gray-700 shadow-sm">
                         @else
                             <select id="status" name="status"
-                                class="mt-1 block w-full rounded-md border-gray-300 bg-white shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                class="mt-1 block w-full rounded-md border-gray-300 bg-white shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                @disabled($readOnly)>
                                 @foreach ($availableStatuses as $s)
                                     <option value="{{ $s }}" @selected($current === $s)>
                                         {{ __('nurse_notes.status.' . $s) }}
@@ -182,7 +209,8 @@
 
                         <div class="flex gap-2">
                             @php
-                                $canSubmit = !($mode === 'edit' && $isLocked); // ปิดเคสแล้วให้ซ่อนปุ่มบันทึก
+                                // ปิดเคสแล้ว → ซ่อนปุ่มบันทึก
+                                $canSubmit = !($mode === 'edit' && $readOnly);
                             @endphp
 
                             @if ($canSubmit)

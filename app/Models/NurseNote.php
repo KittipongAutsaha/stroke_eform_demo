@@ -13,10 +13,8 @@ class NurseNote extends Model
 
     /*
     |--------------------------------------------------------------------------
-    | Constants: สถานะของบันทึกพยาบาล
+    | Constants: Status
     |--------------------------------------------------------------------------
-    | ใช้โครงสร้างเดียวกับของหมอ (DoctorNote)
-    | เพื่อให้ flow และ policy ทำงานสอดคล้องกันในเดโม่
     */
     public const STATUS_PLANNED     = 'planned';
     public const STATUS_IN_PROGRESS = 'in_progress';
@@ -27,8 +25,6 @@ class NurseNote extends Model
     |--------------------------------------------------------------------------
     | Fillable Fields
     |--------------------------------------------------------------------------
-    | ฟิลด์ที่อนุญาตให้กรอกหรือบันทึกผ่าน Mass Assignment ได้
-    | (ชื่อและจำนวนใกล้เคียงกับ DoctorNote เพื่อให้ระบบสอดคล้องกัน)
     */
     protected $fillable = [
         'patient_id',
@@ -53,8 +49,6 @@ class NurseNote extends Model
     |--------------------------------------------------------------------------
     | Casts
     |--------------------------------------------------------------------------
-    | แปลงชนิดข้อมูลอัตโนมัติเมื่ออ่านจากหรือเขียนลงฐานข้อมูล
-    | (ช่วยให้ระบบจัดการวันที่ได้ง่ายและคงรูปแบบเดียวกับของหมอ)
     */
     protected $casts = [
         'scheduled_for'  => 'datetime',
@@ -66,7 +60,6 @@ class NurseNote extends Model
     |--------------------------------------------------------------------------
     | Relationships
     |--------------------------------------------------------------------------
-    | ความสัมพันธ์ระหว่างตารางในระบบ (Eloquent Relationships)
     */
     public function patient()
     {
@@ -82,7 +75,6 @@ class NurseNote extends Model
     |--------------------------------------------------------------------------
     | Scopes
     |--------------------------------------------------------------------------
-    | ใช้กรองข้อมูล (Query Scopes) เพื่อเรียกใช้งานได้สะดวกใน Controller
     */
     public function scopeForPatient($query, $patientId)
     {
@@ -102,7 +94,7 @@ class NurseNote extends Model
 
     public function scopeEditable($query)
     {
-        return $query->whereNull('signed_off_at');
+        return $query->whereNotIn('status', [self::STATUS_SIGNED_OFF, self::STATUS_CANCELLED]);
     }
 
     public function scopePlanned($query)
@@ -125,13 +117,8 @@ class NurseNote extends Model
     | Helpers
     |--------------------------------------------------------------------------
     */
-    /**
-     * ตรวจสอบว่า note นี้ถูก “ล็อก” แล้วหรือไม่
-     * (เช่น เมื่อสถานะเป็น signed_off หรือ cancelled)
-     * ใช้ใน Controller / Policy / View เพื่อป้องกันการแก้ไขหรือลบ
-     */
     public function isLocked(): bool
     {
-        return in_array($this->status, [self::STATUS_SIGNED_OFF, self::STATUS_CANCELLED]);
+        return in_array($this->status, [self::STATUS_SIGNED_OFF, self::STATUS_CANCELLED], true);
     }
 }

@@ -12,11 +12,11 @@ class PatientPolicy
 
     /**
      * ดูข้อมูลผู้ป่วยแต่ละรายการ
-     * admin, doctor, nurse → ดูได้
+     * admin, doctor, nurse, staff → ดูได้
      */
     public function view(User $user, Patient $patient): bool
     {
-        return $user->hasAnyRole(['admin', 'doctor', 'nurse']);
+        return $user->hasAnyRole(['admin', 'doctor', 'nurse', 'staff']);
     }
 
     /**
@@ -31,6 +31,7 @@ class PatientPolicy
     /**
      * แก้ไขข้อมูลผู้ป่วย (ทั่วไป)
      * admin, doctor, nurse → แก้ได้
+     * staff → แก้ไม่ได้
      */
     public function update(User $user, Patient $patient): bool
     {
@@ -39,7 +40,7 @@ class PatientPolicy
 
     /**
      * ลบข้อมูลผู้ป่วย
-     * admin เท่านั้น
+     * admin เท่านั้น (soft delete)
      */
     public function delete(User $user, Patient $patient): bool
     {
